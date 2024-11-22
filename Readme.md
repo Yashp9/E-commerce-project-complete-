@@ -4,6 +4,6 @@
 -->lecture 1
 learn how to use github using vscode
 
--->Learning -3
+-->Learning -3 (0 to 27:00)
 -create mongodb connection inside lib>db.js and connected to server
 -created userModel inside model>user.model.js
