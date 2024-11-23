@@ -26,12 +26,14 @@ const storeRefreshToken = async(userID,refreshToken)=>{
 const setCookies = (res,accessToken,refreshToken)=>{
 
     //res.cookie is an inbuilt method in Express.js used to set cookies on the response object res.cookie(name, value, options)
+    //here we set cookie 'accessToken' casesenstive.
     res.cookie('accessToken',accessToken,{
         httpOnly:true, // prevent XSS attacks, cross site scripting attack.
         secure:process.env.NODE_ENV === 'production',
         sameSite:"strict",// prevents CSRF attack, cross-site request forgery attack
         maxAge:7*24*60*60*1000 //7days
     });
+    //here we set cookie 'refreshToken' casesenstive.
     res.cookie('refreshToken',refreshToken,{
         httpOnly:true, // prevent XSS attacks, cross site scripting attack.
         secure:process.env.NODE_ENV === 'production',
@@ -52,9 +54,9 @@ export const signup = async (req, res) => {
     }
     const user = await User.create({ name, email, password });
 
-    //$$$$$$$$$$$Authentication process$$$$$$$$$$$$$$$$.
+    //$$$$$$$$$$$--Authentication process--$$$$$$$$$$$$$$$$.
     
-    //getting both the tokens from generate tokens.
+    //getting both the tokens from generateToken by calling it generateToken(user._id).
     const{accessToken,refreshToken} = generateToken(user._id); 
 
     //storing token in redis.
@@ -71,14 +73,60 @@ export const signup = async (req, res) => {
         role:user.role,
         message:'user created successfully'});
   } catch (error) {
+    console.log("error in signup controller :-",error.message)
     res.status(500).json({ message: error.message });
   }
 };
 
 export const login = async (req, res) => {
-  res.send("loginroute called");
+  try {
+    //getting user from request_body.
+    const {email,password}=req.body;
+    const user = await User.findOne({email});
+    
+    //if there is user and comparePassword is true then exicute <comparePassword> came from userModel.static.
+    if(user && user.comparePassword(password)){
+      //generating tokens.
+      const {accessToken,refreshToken} = generateToken(user._id);
+      
+      //storing refresh token in redis.
+      await storeRefreshToken(user._id,refreshToken);
+      setCookies(res,accessToken,refreshToken);
+
+      res.json({
+        _id: user._id,
+				name: user.name,
+				email: user.email,
+				role: user.role,
+      });
+    }
+    else{
+      res.status(400).json({message:"Invalid email or password"});
+    }
+  } catch (error) {
+    console.log("error in login controller :-",error.message);
+    res.status(500).json({message:error.message});
+  }
 };
 
+//MOTIVE -> to clear the cookie and also delete the redis key:value also
 export const logout = async (req, res) => {
-  res.send("logout route called");
+   try {
+    //refreshToken came from cookie.
+     const refreshToken = req.cookies.refreshToken;
+     if(refreshToken){
+      //cookie-payload data getstored into the decoded.
+      const decoded = jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET);
+
+      //here deleting the key:value inside redis NOTE :- `refresh_token:${decoded.userID}` should match with you key
+      await redis.del(`refresh_token:${decoded.userID}`)
+     }
+     //clearing cookies.
+     res.clearCookie("refreshToken");
+     res.clearCookie("accessToken");
+     res.json({message:"Logged out successfully"});
+   } catch (error) {
+    console.log("error in logout controller :-",error.message)
+    res.status(500).json({message:"Server error",error:error.message});
+   }
 };
