@@ -31,7 +31,7 @@ learn how to use github using vscode
 ->created function <setCookies> to store tokens.
 
 
-##----->Learning-6 (1:00:00-)
+##----->Learning-6 (1:00:00-1:12:00)
 ->learn {cookies & cookie-parser} form express website
 ->write logout controller.
 ->get refreshToken from cookies.
@@ -45,3 +45,10 @@ learn how to use github using vscode
 ->generate token and get the tokens<generateToken>
 -> <storeRefreshToken> store refresh token in redis.
 ->sending response.
+
+
+##----->Learning-7 (1:12:00-1:41:00)
+->wrote refreshToken logic inside authcontroller{details are in comments easily understandable}.
+->create product route/controller/model and connected with each other.
+->create <protectRoute>,<adminRoute> <getAllProducts> in middleware->auth.middleware.js and import it in Product.routes
+->create <getFeaturedProducts> and calling it from productRoutes.
