@@ -9,3 +9,5 @@ export const connectDB = async ()=>{
         process.exit(1)//1 means falure and 0 means success
     }
 }
+
+

@@ -19,12 +19,7 @@ const generateToken = (userID) => {
 //*creating function to store refreshtoken inside redis.
 const storeRefreshToken = async (userID, refreshToken) => {
   //* here i am setting userid as key and refreshtoken as value which will be expired in 7days.
-  await redis.set(
-    `refresh_token:${userID}`,
-    refreshToken,
-    "EX",
-    7 * 24 * 60 * 60
-  ); //*7days
+  await redis.set(`refresh_token:${userID}`, refreshToken, "EX", 7 * 24 * 60 * 60); // 7days;
 };
 
 
@@ -60,7 +55,7 @@ export const signup = async (req, res) => {
     const user = await User.create({ name, email, password });
 
     //*$$$$$$$$$$$--Authentication process--$$$$$$$$$$$$$$$$.
-
+console.log("user id",user);
     //*getting both the tokens from generateToken by calling it generateToken(user._id).
     const { accessToken, refreshToken } = generateToken(user._id);
 
@@ -88,7 +83,9 @@ export const login = async (req, res) => {
   try {
     //*getting user from request_body.
     const { email, password } = req.body;
+    console.log("&&&&&&&&&&&&&&&&&&*****************8",email,password)
     const user = await User.findOne({ email });
+    console.log("uuuuuuuuuuuuuuuuuuuuuu",user)
 
     //*if there is user and comparePassword is true then exicute <comparePassword> came from userModel.static.
     if (user && user.comparePassword(password)) {
@@ -110,7 +107,7 @@ export const login = async (req, res) => {
     }
   } catch (error) {
     console.log("error in login controller :-", error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: `errorr hsappend ${error.message}` });
   }
 };
 
@@ -184,3 +181,10 @@ export const refreshToken = async (req, res) => {
   }
 };
 
+export const getProfile = async (req, res) => {
+	try {
+		res.json(req.user);
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};

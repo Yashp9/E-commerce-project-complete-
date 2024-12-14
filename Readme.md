@@ -52,3 +52,8 @@ learn how to use github using vscode
 ->create product route/controller/model and connected with each other.
 ->create <protectRoute>,<adminRoute> <getAllProducts> in middleware->auth.middleware.js and import it in Product.routes
 ->create <getFeaturedProducts> and calling it from productRoutes.
+
+##----->Learning-8 (1:41:00-)
+->connect cloudinary inside the lib folder.
+->create product in <createProducts> inside controller and then added it to productRouter.
+->create  <deleteProduct> inside controller and then added it to productRouter.

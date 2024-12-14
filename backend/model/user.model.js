@@ -73,6 +73,7 @@ userSchema.pre('save',async function (next) {
 userSchema.methods.comparePassword = async function(password){
 
     //here the this keyword refers to the user1 or user2 whoever called this methods->user1.comparePassword.
+    //it returns true or false.
     return bcrypt.compare(password,this.password);
 }
 
