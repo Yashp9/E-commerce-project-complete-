@@ -19,7 +19,8 @@ app.use(cors({
 }));
 
 //global middlewares
-app.use(express.json()); //help to deal with json data
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser()); //cookie-parser reads cookies from the header and adds them to req.cookies
 
 const PORT = process.env.PORT || 5000;

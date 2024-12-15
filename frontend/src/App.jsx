@@ -2,12 +2,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
 import { Home } from "lucide-react";
 import Navbar from "./componants/Navbar";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./store/useUserStore";
 import { useEffect } from "react";
 import LoadingSpinner from "./componants/LoadingSpinner"
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
 const {user,checkAuth,checkingAuth} = useUserStore();
@@ -31,6 +33,12 @@ if(checkingAuth) return <LoadingSpinner/>;
           <Route path="/" element={<HomePage />}></Route>
           <Route path="/signup" element={!user?<SignUpPage />:<Navigate to='/'/>}></Route>
           <Route path="/login" element={!user?<LoginPage/>:<Navigate to='/'/>}></Route>
+          <Route
+						path='/secret-dashboard'
+						element={user?.role === "admin" ? <AdminPage /> : <Navigate to='/login' />}
+					/>
+          <Route path="/category/:category" element={<CategoryPage/>}>
+          </Route>
         </Routes>
       </div>
       <Toaster/>
