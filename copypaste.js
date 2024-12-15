@@ -1,132 +1,95 @@
-import { useEffect } from "react";
-import { useProductStore } from "../stores/useProductStore";
-import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import ProductCard from "../components/ProductCard";
-
-const CategoryPage = () => {
-	const { fetchProductsByCategory, products } = useProductStore();
-
-	const { category } = useParams();
-
-	useEffect(() => {
-		fetchProductsByCategory(category);
-	}, [fetchProductsByCategory, category]);
-
-	console.log("products:", products);
-	return (
-		<div className='min-h-screen'>
-			<div className='relative z-10 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16'>
-				<motion.h1
-					className='text-center text-4xl sm:text-5xl font-bold text-emerald-400 mb-8'
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8 }}
-				>
-					{category.charAt(0).toUpperCase() + category.slice(1)}
-				</motion.h1>
-
-				<motion.div
-					className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center'
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.2 }}
-				>
-					{products?.length === 0 && (
-						<h2 className='text-3xl font-semibold text-gray-300 text-center col-span-full'>
-							No products found
-						</h2>
-					)}
-
-					{products?.map((product) => (
-						<ProductCard key={product._id} product={product} />
-					))}
-				</motion.div>
-			</div>
-		</div>
-	);
-};
-export default CategoryPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-***************************************************************************************
-
-
-
-
-
-
-
-
-
-
-import toast from "react-hot-toast";
-import { ShoppingCart } from "lucide-react";
-import { useUserStore } from "../stores/useUserStore";
+import { useEffect, useState } from "react";
 import { useCartStore } from "../stores/useCartStore";
 
-const ProductCard = ({ product }) => {
-	const { user } = useUserStore();
-	const { addToCart } = useCartStore();
-	const handleAddToCart = () => {
-		if (!user) {
-			toast.error("Please login to add products to cart", { id: "login" });
-			return;
-		} else {
-			// add to cart
-			addToCart(product);
-		}
+const GiftCouponCard = () => {
+	const [userInputCode, setUserInputCode] = useState("");
+	const { coupon, isCouponApplied, applyCoupon, getMyCoupon, removeCoupon } = useCartStore();
+
+	useEffect(() => {
+		getMyCoupon();
+	}, [getMyCoupon]);
+
+	useEffect(() => {
+		if (coupon) setUserInputCode(coupon.code);
+	}, [coupon]);
+
+	const handleApplyCoupon = () => {
+		if (!userInputCode) return;
+		applyCoupon(userInputCode);
+	};
+
+	const handleRemoveCoupon = async () => {
+		await removeCoupon();
+		setUserInputCode("");
 	};
 
 	return (
-		<div className='flex w-full relative flex-col overflow-hidden rounded-lg border border-gray-700 shadow-lg'>
-			<div className='relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl'>
-				<img className='object-cover w-full' src={product.image} alt='product image' />
-				<div className='absolute inset-0 bg-black bg-opacity-20' />
-			</div>
+		<motion.div
+			className='space-y-4 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm sm:p-6'
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.5, delay: 0.2 }}
+		>
+			<div className='space-y-4'>
+				<div>
+					<label htmlFor='voucher' className='mb-2 block text-sm font-medium text-gray-300'>
+						Do you have a voucher or gift card?
+					</label>
+					<input
+						type='text'
+						id='voucher'
+						className='block w-full rounded-lg border border-gray-600 bg-gray-700 
+            p-2.5 text-sm text-white placeholder-gray-400 focus:border-emerald-500 
+            focus:ring-emerald-500'
+						placeholder='Enter code here'
+						value={userInputCode}
+						onChange={(e) => setUserInputCode(e.target.value)}
+						required
+					/>
+				</div>
 
-			<div className='mt-4 px-5 pb-5'>
-				<h5 className='text-xl font-semibold tracking-tight text-white'>{product.name}</h5>
-				<div className='mt-2 mb-5 flex items-center justify-between'>
-					<p>
-						<span className='text-3xl font-bold text-emerald-400'>${product.price}</span>
+				<motion.button
+					type='button'
+					className='flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300'
+					whileHover={{ scale: 1.05 }}
+					whileTap={{ scale: 0.95 }}
+					onClick={handleApplyCoupon}
+				>
+					Apply Code
+				</motion.button>
+			</div>
+			{isCouponApplied && coupon && (
+				<div className='mt-4'>
+					<h3 className='text-lg font-medium text-gray-300'>Applied Coupon</h3>
+
+					<p className='mt-2 text-sm text-gray-400'>
+						{coupon.code} - {coupon.discountPercentage}% off
+					</p>
+
+					<motion.button
+						type='button'
+						className='mt-2 flex w-full items-center justify-center rounded-lg bg-red-600 
+            px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none
+             focus:ring-4 focus:ring-red-300'
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						onClick={handleRemoveCoupon}
+					>
+						Remove Coupon
+					</motion.button>
+				</div>
+			)}
+
+			{coupon && (
+				<div className='mt-4'>
+					<h3 className='text-lg font-medium text-gray-300'>Your Available Coupon:</h3>
+					<p className='mt-2 text-sm text-gray-400'>
+						{coupon.code} - {coupon.discountPercentage}% off
 					</p>
 				</div>
-				<button
-					className='flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-center text-sm font-medium
-					 text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300'
-					onClick={handleAddToCart}
-				>
-					<ShoppingCart size={22} className='mr-2' />
-					Add to cart
-				</button>
-			</div>
-		</div>
+			)}
+		</motion.div>
 	);
 };
-export default ProductCard;
-
-
-
-
-
-
-
-
-
+export default GiftCouponCard;
