@@ -162,7 +162,7 @@ export const checkoutSuccess = async (req, res) => {
 // Function to create a new coupon for a user.
 async function createNewCoupon(userID) {
   // Deleting any existing coupon for the user.
-  await Coupon.findOneAndDelete({ userID });
+  await Coupon.findOneAndDelete({ userID});
 
   // Generating a new coupon with a 10% discount and a 30-day expiration.
   const newCoupon = new Coupon({

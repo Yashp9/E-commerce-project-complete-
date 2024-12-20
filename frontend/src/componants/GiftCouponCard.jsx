@@ -4,14 +4,24 @@ import { useCartStore } from "../store/useCartStore";
 
 const GiftCouponCard = () => {
     const [userInputCode,setUserInputCode] = useState("");
-    const { coupon, isCouponApplied, getMyCoupon, } = useCartStore();
+    const { coupon, isCouponApplied, applyCoupon, getMyCoupon, removeCoupon } = useCartStore();
+
+    useEffect(() => {
+            getMyCoupon();
+        }, [getMyCoupon]);
+    
+    useEffect(() => {
+        if (coupon) setUserInputCode(coupon.code);
+    }, [coupon]);
 
     const handleApplyCoupon = () => {
-		console.log("handledApplycoupon")
+		if (!userInputCode) return;
+		applyCoupon(userInputCode);
 	};
 
 	const handleRemoveCoupon = async () => {
-		console.log("handleRemoveCoupon")
+		await removeCoupon();
+		setUserInputCode("");
 	};
 
   return (

@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { useCartStore } from "../store/useCartStore";
 import axios from "../lib/axios";
+import { loadStripe } from "@stripe/stripe-js";
+
+//creating stripe instance.
+const stripePromise = loadStripe("pk_test_51NiLgJSDVhYU3gCCLaPrqIG5fMBsSTZo7PEU4BxtXC3rSKGLNYEr0V1YgHVkgLrI9SsN60c0HqcIHWetFYOrE5Kd00rPFN1Mau")
 
 const OrderSummary  = () => {
   const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
@@ -12,23 +16,38 @@ const OrderSummary  = () => {
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
 
-  const handlePayment = async () => {
-    console.log("handled payment")
-        // const stripe = await stripePromise;
-        // const res = await axios.post("/payments/create-checkout-session", {
-        //     products: cart,
-        //     couponCode: coupon ? coupon.code : null,
-        // });
-  
-        // const session = res.data;
-        // const result = await stripe.redirectToCheckout({
-        //     sessionId: session.id,
-        // });
-  
-        // if (result.error) {
-        //     console.error("Error:", result.error);
-        // }
-    };
+  // Function to handle the payment process
+const handlePayment = async () => {
+    console.log("handled payment");
+
+    // Load the Stripe instance (initialized earlier with the public key)
+    const stripe = await stripePromise;
+
+    try {
+        // Send a POST request to the backend to create a Stripe checkout session
+        const res = await axios.post("/payments/create-checkout-session", {
+            products: cart, // Send the list of products from the cart
+            couponCode: coupon ? coupon.code : null, // Include the coupon code if it exists, otherwise send null
+        });
+
+        // Retrieve the Stripe session data from the backend response
+        const session = res.data;
+
+        // Use the Stripe instance to redirect the user to the Stripe Checkout page
+        const result = await stripe.redirectToCheckout({
+            sessionId: session.id, // Pass the session ID returned by the backend
+        });
+
+        // If there's an error during the redirection, log it to the console
+        if (result.error) {
+            console.error("Error:", result.error);
+        }
+    } catch (error) {
+        // Log any errors that occur during the request or redirection process
+        console.error("Payment initiation failed:", error.message);
+    }
+};
+
 
 
   return (
