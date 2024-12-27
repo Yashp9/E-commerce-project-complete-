@@ -1,8 +1,4 @@
 image explaination
-#1> 41:44 signup Auth.
-#2> 1:00:00 logout functionality.
-#3> 1:04:00 login functionality.
-#4> 1:12:00 refresh token
 
 <----------------------------->
 
@@ -13,16 +9,16 @@ image explaination
 learn how to use github using vscode
 
 
-##------>Learning -3 (0 to 27:00)
+##------>Learning -3
 -create mongodb connection inside lib>db.js and connected to server
 -created userModel inside model>user.model.js
 
-##-->Learning -4 (27 to 31)
+##-->Learning -4 
 ->create static function to generate hash password(inside usermodel)<userSchema.pre>.
 ->also create a logic to compare the password(inside usermodel)<comparePassword>.
 
 
-##----->learning -5 (31:00 to 1:00:00 )
+##----->learning -5 
 ->get date form request body <signup>and if data not exist then store it into the database with hashed password and return response(inside authController).
 ->created upstash account and connect with redis inside (lib>redis.js) upstash_redis_key.
 ->created keys for token in .env
@@ -31,7 +27,7 @@ learn how to use github using vscode
 ->created function <setCookies> to store tokens.
 
 
-##----->Learning-6 (1:00:00-1:12:00)
+##----->Learning-6 
 ->learn {cookies & cookie-parser} form express website
 ->write logout controller.
 ->get refreshToken from cookies.
@@ -47,13 +43,13 @@ learn how to use github using vscode
 ->sending response.
 
 
-##----->Learning-7 (1:12:00-1:41:00)
+##----->Learning-7 
 ->wrote refreshToken logic inside authcontroller{details are in comments easily understandable}.
 ->create product route/controller/model and connected with each other.
 ->create <protectRoute>,<adminRoute> <getAllProducts> in middleware->auth.middleware.js and import it in Product.routes
 ->create <getFeaturedProducts> and calling it from productRoutes.
 
-##----->Learning-8 (1:41:00-)
+##----->Learning-8
 ->connect cloudinary inside the lib folder.
 ->create product in <createProducts> inside controller and then added it to productRouter.
 ->create  <deleteProduct> inside controller and then added it to productRouter.
