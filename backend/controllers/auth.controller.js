@@ -6,7 +6,7 @@ import jwt, { decode } from "jsonwebtoken";
 const generateToken = (userID) => {
   //*sending  userID  as a payload data
   const accessToken = jwt.sign({ userID }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "45m",
+    expiresIn: "5m",
   });
 
   const refreshToken = jwt.sign({ userID }, process.env.REFRESH_TOKEN_SECRET, {
