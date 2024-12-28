@@ -1,4 +1,4 @@
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock,House } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../store/useUserStore";
 import { useCartStore } from "../store/useCartStore";
@@ -24,7 +24,8 @@ const Navbar = () => {
               to={"/"}
               className="text-gray-300 hover:text-emerald-400 transition duration-300
 					 ease-in-out"
-            >
+            ><House className="inline-block mr-1 group-hover:text-emerald-400"
+                  size={20}/>
               Home
             </Link>
             {user && (
