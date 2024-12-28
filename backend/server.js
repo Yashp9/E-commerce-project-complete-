@@ -10,19 +10,19 @@ import paymentRoutes from "./routes/payment.route.js";
 import analyticsRoutes from "./routes/analytics.route.js"; 
 import cors from "cors";
 import path from "path";
-
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Derive __dirname for ES Modules
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware for CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL, // Allow Vite dev server during development
+    origin: "http://localhost:5173", // Allow Vite dev server during development
     credentials: true,
   })
 );
@@ -41,15 +41,15 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
 // Serve static files from the React app (Vite `dist` folder)
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-	});
-}
+// Catch-all route for React
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
 // Server Listening
-
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Server has started: http://localhost:" + PORT);
   connectDB();

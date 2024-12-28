@@ -19,6 +19,7 @@ export default defineConfig({
       external: ['ioredis'], // Exclude ioredis from bundling
     },
   },
+  
 
 })
  
