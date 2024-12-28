@@ -22,7 +22,7 @@ const __dirname = path.resolve();
 // Middleware for CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow Vite dev server during development
+    origin: process.env.CLIENT_URL, // Allow Vite dev server during development
     credentials: true,
   })
 );
